@@ -1,0 +1,28 @@
+server:
+  port: 10010
+
+spring:
+  cache:
+    type: simple
+  task:
+    scheduling:
+      pool:
+        size: 2
+      thread-name-prefix: custom-scheduling-
+    execution:
+      thread-name-prefix: custom-task-
+      pool:
+        core-size: 7
+        max-size: 20
+        allow-core-thread-timeout: false
+        queue-capacity: 30
+        keep-alive: 50s
+my:
+  scheduling:
+    fixedDelay:
+      in:
+        milliseconds: 1000
+    fixedRate:
+      in:
+        milliseconds: 1000
+    cron: "2/1 * * ? * *"
