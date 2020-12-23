@@ -6,20 +6,20 @@ import java.util.Arrays;
 
 public class IntegerInValidator implements ConstraintValidator<IntegerIn, Integer> {
 
-    private int[] enums;
+    private int[] ints;
 
     @Override
     public void initialize(IntegerIn constraintAnnotation) {
-        enums = constraintAnnotation.value();
+        ints = constraintAnnotation.value();
     }
 
     @Override
     public boolean isValid(Integer value, ConstraintValidatorContext context) {
-        if (enums == null) {
+        if (ints == null) {
             return true;
         }
         boolean valid = false;
-        for (int ele : enums) {
+        for (int ele : ints) {
             if (ele == value) {
                 valid = true;
                 break;
@@ -27,7 +27,7 @@ public class IntegerInValidator implements ConstraintValidator<IntegerIn, Intege
         }
         if (context.getDefaultConstraintMessageTemplate().isEmpty()) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(" must in " + Arrays.toString(enums)).addConstraintViolation();
+            context.buildConstraintViolationWithTemplate(" must in " + Arrays.toString(ints)).addConstraintViolation();
         }
         return valid;
     }
