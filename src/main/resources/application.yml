@@ -19,6 +19,8 @@ spring:
         keep-alive: 50s
   mvc:
     throw-exception-if-no-handler-found: true
+#  jackson:
+#    default-property-inclusion: non_null
 
 my:
   scheduling:
@@ -37,4 +39,3 @@ management:
 logging:
   level:
     root: info
-
