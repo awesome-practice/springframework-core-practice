@@ -4,20 +4,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(code = HttpStatus.I_AM_A_TEAPOT,reason = "manual static exception")
-public class CustomExceptionStatic extends RuntimeException{
+public class StatusBounddException extends RuntimeException{
 
-    public CustomExceptionStatic() {
+    public StatusBounddException() {
     }
 
-    public CustomExceptionStatic(String message) {
+    public StatusBounddException(String message) {
         super(message);
     }
 
-    public CustomExceptionStatic(String message, Throwable cause) {
+    public StatusBounddException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public CustomExceptionStatic(Throwable cause) {
+    public StatusBounddException(Throwable cause) {
         super(cause);
     }
 

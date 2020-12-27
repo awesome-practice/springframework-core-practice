@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -33,12 +34,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({Exception.class})
     public ResponseEntity<ApiError> handleAll(Exception ex, WebRequest request) {
         log.error("global exception", ex);
-        if (ex instanceof CustomExceptionDynamic) {
-            ApiError apiError = new ApiError(((CustomExceptionDynamic) ex).getStatus(), ex.getLocalizedMessage());
-            return new ResponseEntity<>(apiError, ((CustomExceptionDynamic) ex).getStatus());
+        if (ex instanceof BusinessException) {
+            ApiError apiError = new ApiError(((BusinessException) ex).getStatus(), ex.getLocalizedMessage());
+            return new ResponseEntity<>(apiError, ((BusinessException) ex).getStatus());
         } else if (ex instanceof MethodArgumentTypeMismatchException) {
-            MethodArgumentTypeMismatchException ex1 = (MethodArgumentTypeMismatchException) ex;
-            String error = ex1.getName() + " should be of type " + ex1.getRequiredType().getName();
+            MethodArgumentTypeMismatchException realEx = (MethodArgumentTypeMismatchException) ex;
+            String error = realEx.getName() + " should be of type " + realEx.getRequiredType().getName();
             HttpStatus status = HttpStatus.BAD_REQUEST;
             ApiError apiError = new ApiError(status, error);
             return new ResponseEntity<ApiError>(apiError, status);
@@ -51,9 +52,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             HttpStatus status = HttpStatus.BAD_REQUEST;
             ApiError apiError = new ApiError(status, errors.toString());
             return new ResponseEntity<ApiError>(apiError, status);
+        } else if (ex instanceof ResponseStatusException) {
+            ResponseStatusException realEx = (ResponseStatusException) ex;
+            ApiError apiError = new ApiError(realEx.getStatus(), realEx.getReason());
+            return new ResponseEntity<ApiError>(apiError, realEx.getStatus());
         } else {
             HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-            ApiError apiError = new ApiError(status, "error occurred");
+            ApiError apiError = new ApiError(status, "system exception");
             return new ResponseEntity<ApiError>(apiError, status);
         }
 

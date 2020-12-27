@@ -1,7 +1,7 @@
 package com.practice.springframework.core.exception.web;
 
-import com.practice.springframework.core.exception.CustomExceptionDynamic;
-import com.practice.springframework.core.exception.CustomExceptionStatic;
+import com.practice.springframework.core.exception.BusinessException;
+import com.practice.springframework.core.exception.StatusBounddException;
 import com.practice.springframework.core.exception.model.Hello;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,22 +16,22 @@ public class ExceptionDemoController {
 
     @GetMapping("/static")
     public ResponseEntity<Object> getStatic() {
-        throw new CustomExceptionStatic("CustomExceptionStatic");
+        throw new StatusBounddException("CustomExceptionStatic");
     }
 
     @GetMapping("/provided")
     public ResponseEntity<Object> provided() {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ResponseStatusException");
+        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "ResponseStatusException");
     }
 
     @GetMapping("/providedWithCause")
     public ResponseEntity<Object> providedWithCause() {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ResponseStatusException", new RuntimeException("manual case exception"));
+        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "ResponseStatusException", new RuntimeException("manual case exception"));
     }
 
     @GetMapping("/dynamic")
     public ResponseEntity<Object> dynamic() {
-        throw new CustomExceptionDynamic(HttpStatus.BAD_REQUEST, "CustomExceptionDynamic");
+        throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "CustomExceptionDynamic");
     }
 
     @GetMapping("/{id}")
