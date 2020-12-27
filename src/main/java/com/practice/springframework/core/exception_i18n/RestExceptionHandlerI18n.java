@@ -15,12 +15,12 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
-public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+public class RestExceptionHandlerI18n extends ResponseEntityExceptionHandler {
     private static final String UNEXPECTED_ERROR = "Exception.unexpected";
     private final MessageSource messageSource;
 
     @Autowired
-    public RestExceptionHandler(MessageSource messageSource) {
+    public RestExceptionHandlerI18n(MessageSource messageSource) {
         this.messageSource = messageSource;
     }
 
