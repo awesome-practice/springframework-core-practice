@@ -17,6 +17,9 @@ spring:
         allow-core-thread-timeout: false
         queue-capacity: 30
         keep-alive: 50s
+  mvc:
+    throw-exception-if-no-handler-found: true
+
 my:
   scheduling:
     fixedDelay:
@@ -26,3 +29,12 @@ my:
       in:
         milliseconds: 1000
     cron: "2/1 * * ? * *"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+logging:
+  level:
+    root: info
+
