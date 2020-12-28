@@ -21,6 +21,9 @@ public class I18nController {
         return messageSource.getMessage("error.notfound", null, locale);
     }
 
+    /**
+     * /i18n/2?local=zh
+     */
     @GetMapping("/i18n/2")
     public String threadLocal() {
         return MyTranslator.toLocale("error.notfound");
