@@ -1,5 +1,6 @@
 package com.practice.springframework.core.i18n;
 
+import com.practice.springframework.core.util.MyTranslator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,12 +10,22 @@ import java.util.Locale;
 
 @RestController
 public class I18nController {
- 
-    @Autowired
-    MessageSource messageSource;
-     
+
+    final MessageSource messageSource;
+
+    public I18nController(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
+
     @GetMapping("/i18n")
     public String index(Locale locale) {
         return messageSource.getMessage("error.notfound", null, locale);
     }
+
+    @GetMapping("/i18n/2")
+    public String threadLocal() {
+        return MyTranslator.toLocale("error.notfound");
+    }
+
+
 }

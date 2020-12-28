@@ -1,5 +1,6 @@
 package com.practice.springframework.core.util;
 
+import com.sun.java.accessibility.util.Translator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -9,13 +10,13 @@ import org.springframework.stereotype.Component;
 import java.util.Locale;
 
 @Component
-public class Translator {
+public class MyTranslator {
 
    private static MessageSource messageSource;
 
    @Autowired
-   Translator(MessageSource messageSource) {
-      Translator.messageSource = messageSource;
+   MyTranslator(MessageSource messageSource) {
+      MyTranslator.messageSource = messageSource;
    }
 
    public static String toLocale(String msgCode) {
