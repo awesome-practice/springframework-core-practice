@@ -31,7 +31,7 @@ public class ExceptionDemoController {
 
     @GetMapping("/dynamic")
     public ResponseEntity<Object> dynamic() {
-        throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "CustomExceptionDynamic");
+        throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "error.notfound");
     }
 
     @GetMapping("/{id}")
