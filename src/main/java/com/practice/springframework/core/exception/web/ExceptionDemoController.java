@@ -2,7 +2,7 @@ package com.practice.springframework.core.exception.web;
 
 import com.practice.springframework.core.exception.BusinessException;
 import com.practice.springframework.core.exception.StatusBounddException;
-import com.practice.springframework.core.exception.model.Hello;
+import com.practice.springframework.core.exception.model.Man;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +40,7 @@ public class ExceptionDemoController {
     }
 
     @PostMapping
-    public ResponseEntity<Hello> post(@RequestBody @Valid Hello request) {
+    public ResponseEntity<Man> post(@RequestBody @Valid Man request) {
         return ResponseEntity.ok(request);
     }
 }
