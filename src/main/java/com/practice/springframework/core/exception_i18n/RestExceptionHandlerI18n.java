@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-@ControllerAdvice
+//@ControllerAdvice
 public class RestExceptionHandlerI18n extends ResponseEntityExceptionHandler {
     private static final String UNEXPECTED_ERROR = "Exception.unexpected";
     private final MessageSource messageSource;

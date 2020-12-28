@@ -19,9 +19,10 @@ spring:
         keep-alive: 50s
   mvc:
     throw-exception-if-no-handler-found: true
+  messages:
+    encoding: utf-8
 #  jackson:
 #    default-property-inclusion: non_null
-
 my:
   scheduling:
     fixedDelay:
