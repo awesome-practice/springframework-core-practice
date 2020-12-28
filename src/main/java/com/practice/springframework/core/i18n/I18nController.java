@@ -1,7 +1,6 @@
 package com.practice.springframework.core.i18n;
 
 import com.practice.springframework.core.util.MyTranslator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
