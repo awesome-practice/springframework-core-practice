@@ -6,6 +6,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -14,12 +15,14 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
@@ -139,6 +142,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             HttpHeaders headers,
             HttpStatus status,
             WebRequest request) {
+        log.error("global exception", ex);
+        List<String> errors = new ArrayList<String>();
+        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
+            errors.add(error.getField() + ": " + error.getDefaultMessage());
+        }
+        for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
+            errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
+        }
+        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+
+        ApiError apiError = new ApiError(badRequest, String.join(",", errors));
+        return new ResponseEntity<>(apiError, status);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleBindException(BindException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         log.error("global exception", ex);
         List<String> errors = new ArrayList<String>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
