@@ -1,0 +1,14 @@
+POST http://localhost:10010/exception
+Content-Type: application/json
+
+{
+  "username": "username",
+  "sex": 2,
+  "age": 18,
+  "email": "xx@xx.com",
+  "authorEmail": "xx@xx.com",
+  "authorEmailI18n": "xx@xx.com",
+  "testCount": 1,
+  "codeCoverage": 60
+}
+

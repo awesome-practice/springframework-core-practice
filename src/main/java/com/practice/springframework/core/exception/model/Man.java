@@ -28,9 +28,17 @@ public class Man {
     )
     private String authorEmail;
 
+
+    @Size(
+            min = 5,
+            max = 14,
+            message = "{constraints.Size.message}"
+    )
+    private String authorEmailI18n;
+
     @Min(
             value = 1,
-            message = "There must be at least {value} tests in the test case"
+            message = "{constraints.Min.message}"
     )
     private int testCount;
 
