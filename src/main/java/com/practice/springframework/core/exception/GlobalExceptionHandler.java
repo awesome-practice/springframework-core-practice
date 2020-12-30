@@ -15,14 +15,12 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.ArrayList;
@@ -46,17 +44,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler({Exception.class})
-    public ResponseEntity<ApiError> handleAll(Exception ex, WebRequest request) {
+    public ResponseEntity<Result> handleAll(Exception ex, WebRequest request) {
         log.error("global exception", ex);
         if (ex instanceof BusinessException) {
-            ApiError apiError = new ApiError(((BusinessException) ex).getStatus(),toLocale(ex.getMessage()));
-            return new ResponseEntity<>(apiError, ((BusinessException) ex).getStatus());
+            Result result = new Result(((BusinessException) ex).getStatus(),toLocale(ex.getMessage()));
+            return new ResponseEntity<>(result, ((BusinessException) ex).getStatus());
         } else if (ex instanceof MethodArgumentTypeMismatchException) {
             MethodArgumentTypeMismatchException realEx = (MethodArgumentTypeMismatchException) ex;
             String error = realEx.getName() + " should be of type " + realEx.getRequiredType().getName();
             HttpStatus status = HttpStatus.BAD_REQUEST;
-            ApiError apiError = new ApiError(status, error);
-            return new ResponseEntity<ApiError>(apiError, status);
+            Result result = new Result(status, error);
+            return new ResponseEntity<Result>(result, status);
         } else if (ex instanceof ConstraintViolationException) {
             List<String> errors = new ArrayList<String>();
             for (ConstraintViolation<?> violation : ((ConstraintViolationException) ex).getConstraintViolations()) {
@@ -64,16 +62,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         violation.getPropertyPath() + ": " + violation.getMessage());
             }
             HttpStatus status = HttpStatus.BAD_REQUEST;
-            ApiError apiError = new ApiError(status, errors.toString());
-            return new ResponseEntity<ApiError>(apiError, status);
+            Result result = new Result(status, errors.toString());
+            return new ResponseEntity<Result>(result, status);
         } else if (ex instanceof ResponseStatusException) {
             ResponseStatusException realEx = (ResponseStatusException) ex;
-            ApiError apiError = new ApiError(realEx.getStatus(), realEx.getReason());
-            return new ResponseEntity<ApiError>(apiError, realEx.getStatus());
+            Result result = new Result(realEx.getStatus(), realEx.getReason());
+            return new ResponseEntity<Result>(result, realEx.getStatus());
         } else {
             HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-            ApiError apiError = new ApiError(status, "system exception");
-            return new ResponseEntity<ApiError>(apiError, status);
+            Result result = new Result(status, "system exception");
+            return new ResponseEntity<Result>(result, status);
         }
 
     }
@@ -82,11 +80,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
         log.error("global exception", ex);
-        if (body instanceof ApiError) {
+        if (body instanceof Result) {
             return new ResponseEntity<>(body, status);
         } else {
-            ApiError apiError = new ApiError(status, ex.getLocalizedMessage());
-            return new ResponseEntity<>(apiError, status);
+            Result result = new Result(status, ex.getLocalizedMessage());
+            return new ResponseEntity<>(result, status);
         }
 
     }
@@ -102,8 +100,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         String error = ex.getParameterName() + " parameter is missing";
 
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
-        ApiError apiError = new ApiError(badRequest, error);
-        return new ResponseEntity<Object>(apiError, badRequest);
+        Result result = new Result(badRequest, error);
+        return new ResponseEntity<Object>(result, badRequest);
     }
 
     @Override
@@ -113,8 +111,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         String error = "No handler found for " + ex.getHttpMethod() + " " + ex.getRequestURL();
 
         HttpStatus notFound = HttpStatus.NOT_FOUND;
-        ApiError apiError = new ApiError(notFound, error);
-        return new ResponseEntity<Object>(apiError, notFound);
+        Result result = new Result(notFound, error);
+        return new ResponseEntity<Object>(result, notFound);
     }
 
     @Override
@@ -131,9 +129,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         Objects.requireNonNull(ex.getSupportedHttpMethods()).forEach(t -> builder.append(t).append(" "));
 
         HttpStatus methodNotAllowed = HttpStatus.METHOD_NOT_ALLOWED;
-        ApiError apiError = new ApiError(methodNotAllowed,
+        Result result = new Result(methodNotAllowed,
                 builder.toString());
-        return new ResponseEntity<Object>(apiError, methodNotAllowed);
+        return new ResponseEntity<Object>(result, methodNotAllowed);
     }
 
     @Override
@@ -152,8 +150,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         }
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
 
-        ApiError apiError = new ApiError(badRequest, String.join(",", errors));
-        return new ResponseEntity<>(apiError, status);
+        Result result = new Result(badRequest, String.join(",", errors));
+        return new ResponseEntity<>(result, status);
     }
 
     @Override
@@ -168,8 +166,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         }
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
 
-        ApiError apiError = new ApiError(badRequest, String.join(",", errors));
-        return new ResponseEntity<>(apiError, status);
+        Result result = new Result(badRequest, String.join(",", errors));
+        return new ResponseEntity<>(result, status);
     }
 
     @Override
@@ -185,9 +183,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ex.getSupportedMediaTypes().forEach(t -> builder.append(t).append(", "));
 
         HttpStatus unsupportedMediaType = HttpStatus.UNSUPPORTED_MEDIA_TYPE;
-        ApiError apiError = new ApiError(unsupportedMediaType,
+        Result result = new Result(unsupportedMediaType,
                 builder.substring(0, builder.length() - 2));
-        return new ResponseEntity<>(apiError, unsupportedMediaType);
+        return new ResponseEntity<>(result, unsupportedMediaType);
     }
 
 
