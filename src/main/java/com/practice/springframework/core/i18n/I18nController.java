@@ -22,7 +22,7 @@ public class I18nController {
     }
 
     /**
-     * /i18n/2?local=zh
+     * /i18n/2?locale=zh
      */
     @GetMapping("/i18n/2")
     public String threadLocal() {
