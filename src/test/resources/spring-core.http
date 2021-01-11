@@ -1,4 +1,4 @@
-POST http://localhost:10010/exception
+POST http://{{base_url}}/exception
 Content-Type: application/json
 
 {
@@ -12,3 +12,19 @@ Content-Type: application/json
   "codeCoverage": 60
 }
 
+###
+GET http://{{base_url}}/programmaticValidation/noErrParam?pilotId
+
+> {%
+client.test("400", function() {
+  client.assert(response.status === 400, "response status is not 200");
+});
+%}
+###
+GET http://{{base_url}}/programmaticValidation/haveErrParam?pilotId
+
+> {%
+client.test("success check", function() {
+  client.assert(response.status === 200, "response status is not 200");
+});
+%}

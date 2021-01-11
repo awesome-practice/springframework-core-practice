@@ -28,7 +28,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
 
     @Bean
-    public Object setValidatorLocal(LocalValidatorFactoryBean localValidatorFactoryBean, MessageSource messageSource) {
+    public Object buildValidatorLocal(LocalValidatorFactoryBean localValidatorFactoryBean, MessageSource messageSource) {
         localValidatorFactoryBean.setValidationMessageSource(messageSource);
         return new Object();
     }

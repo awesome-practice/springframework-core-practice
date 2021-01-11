@@ -1,6 +1,7 @@
 package com.practice.springframework.core.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
@@ -33,9 +34,11 @@ import java.util.Objects;
 @Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private final MessageSource messageSource;
+    private final ApplicationContext context;
 
-    public GlobalExceptionHandler(MessageSource messageSource) {
+    public GlobalExceptionHandler(MessageSource messageSource, ApplicationContext context) {
         this.messageSource = messageSource;
+        this.context = context;
     }
 
     public String toLocale(String msgCode) {
@@ -45,9 +48,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({Exception.class})
     public ResponseEntity<Result> handleAll(Exception ex, WebRequest request) {
-        log.error("global exception", ex);
+        log(ex);
         if (ex instanceof BusinessException) {
-            Result result = new Result(((BusinessException) ex).getStatus(),toLocale(ex.getMessage()));
+            Result result = new Result(((BusinessException) ex).getStatus(), toLocale(ex.getMessage()));
             return new ResponseEntity<>(result, ((BusinessException) ex).getStatus());
         } else if (ex instanceof MethodArgumentTypeMismatchException) {
             MethodArgumentTypeMismatchException realEx = (MethodArgumentTypeMismatchException) ex;
@@ -79,7 +82,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        log.error("global exception", ex);
+        log(ex);
         if (body instanceof Result) {
             return new ResponseEntity<>(body, status);
         } else {
@@ -89,6 +92,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     }
 
+    private void log(Exception ex) {
+        log.warn("global exception", ex);
+    }
+
 //    ~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -96,7 +103,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMissingServletRequestParameter(
             MissingServletRequestParameterException ex, HttpHeaders headers,
             HttpStatus status, WebRequest request) {
-        log.error("global exception", ex);
+        log(ex);
         String error = ex.getParameterName() + " parameter is missing";
 
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
@@ -107,7 +114,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleNoHandlerFoundException(
             NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        log.error("global exception", ex);
+        log(ex);
         String error = "No handler found for " + ex.getHttpMethod() + " " + ex.getRequestURL();
 
         HttpStatus notFound = HttpStatus.NOT_FOUND;
@@ -121,7 +128,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             HttpHeaders headers,
             HttpStatus status,
             WebRequest request) {
-        log.error("global exception", ex);
+        log(ex);
         StringBuilder builder = new StringBuilder();
         builder.append(ex.getMethod());
         builder.append(
@@ -140,13 +147,23 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             HttpHeaders headers,
             HttpStatus status,
             WebRequest request) {
-        log.error("global exception", ex);
+        log(ex);
         List<String> errors = new ArrayList<String>();
+
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-            errors.add(error.getField() + ": " + error.getDefaultMessage());
+            if (error.getCode() != null) {
+                errors.add(messageSource.getMessage(error.getCode(), null, LocaleContextHolder.getLocale()));
+            } else {
+                errors.add(error.getDefaultMessage());
+            }
+
         }
         for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
-            errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
+            if (error.getCode() != null) {
+                errors.add(messageSource.getMessage(error.getCode(), null, LocaleContextHolder.getLocale()));
+            } else {
+                errors.add(error.getDefaultMessage());
+            }
         }
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
 
@@ -156,17 +173,26 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
     protected ResponseEntity<Object> handleBindException(BindException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        log.error("global exception", ex);
+        log(ex);
         List<String> errors = new ArrayList<String>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-            errors.add(error.getField() + ": " + error.getDefaultMessage());
+            if (error.getCode() != null) {
+                errors.add(messageSource.getMessage(error.getCode(), null, LocaleContextHolder.getLocale()));
+            } else {
+                errors.add(error.getDefaultMessage());
+            }
+
         }
         for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
-            errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
+            if (error.getCode() != null) {
+                errors.add(messageSource.getMessage(error.getCode(), null, LocaleContextHolder.getLocale()));
+            } else {
+                errors.add(error.getDefaultMessage());
+            }
         }
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
 
-        Result result = new Result(badRequest, String.join(",", errors));
+        Result result = new Result(badRequest, String.join(";", errors));
         return new ResponseEntity<>(result, status);
     }
 
@@ -176,7 +202,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             HttpHeaders headers,
             HttpStatus status,
             WebRequest request) {
-        log.error("global exception", ex);
+        log(ex);
         StringBuilder builder = new StringBuilder();
         builder.append(ex.getContentType());
         builder.append(" media type is not supported. Supported media types are ");
@@ -187,8 +213,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 builder.substring(0, builder.length() - 2));
         return new ResponseEntity<>(result, unsupportedMediaType);
     }
-
-
 
 
 }
