@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = {IntegerInValidator.class})
 @Documented
 public @interface IntegerIn{
-    String message() default "{validation.IntegerIn.massage}";
+    String message() default "{validation.IntegerIn.massage}";  // or without i18n: "number should be in {value}"
 
     Class<?>[] groups() default {};
 
